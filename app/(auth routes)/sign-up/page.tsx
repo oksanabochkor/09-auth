@@ -3,6 +3,8 @@
 import { register } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 
+import css from "./SignUpPage.module.css";
+
 export default function SignUpPage() {
   const router = useRouter();
 
