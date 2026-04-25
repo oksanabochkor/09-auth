@@ -1,14 +1,8 @@
-import axios from "axios";
+import { api } from "./api";
+
 import type { Note } from "@/types/note";
 import type { NotesResponse } from "@/types/notes-response";
 import type { User } from "@/types/user";
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
-
-const api = axios.create({
-  baseURL,
-  withCredentials: true, // 🔥 важливо для cookies
-});
 
 // ===== AUTH =====
 
@@ -35,7 +29,7 @@ export const logout = async (): Promise<void> => {
 export const checkSession = async (): Promise<User | null> => {
   try {
     const res = await api.get("/auth/session");
-    return res.data;
+    return res.data || null;
   } catch {
     return null;
   }
@@ -62,15 +56,15 @@ export const fetchNotes = async (
   page = 1,
   tag?: string
 ): Promise<NotesResponse> => {
-  const res = await api.get("/notes", {
-    params: {
-      search,
-      page,
-      perPage: 12,
-      tag,
-    },
-  });
+  const params: Record<string, unknown> = {
+    search,
+    page,
+    perPage: 12,
+  };
 
+  if (tag) params.tag = tag;
+
+  const res = await api.get("/notes", { params });
   return res.data;
 };
 
