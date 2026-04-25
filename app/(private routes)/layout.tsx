@@ -1,8 +1,16 @@
-// app/(private routes)/layout.tsx
-export default function PrivateLayout({
+import { ReactNode } from "react";
+
+export default function Layout({
   children,
+  sidebar,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
+  sidebar?: ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div style={{ display: "flex", gap: "20px" }}>
+      <aside style={{ width: "250px" }}>{sidebar}</aside>
+      <main style={{ flex: 1 }}>{children}</main>
+    </div>
+  );
 }

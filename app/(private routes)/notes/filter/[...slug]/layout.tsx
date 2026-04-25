@@ -5,7 +5,7 @@ export default function Layout({
   sidebar,
 }: {
   children: ReactNode;
-  sidebar: ReactNode;
+  sidebar?: ReactNode;
 }) {
   return (
     <div style={{ display: "flex", gap: "20px" }}>
