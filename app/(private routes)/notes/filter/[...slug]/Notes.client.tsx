@@ -60,9 +60,3 @@ export default function NotesClient({ tag }: Props) {
     </div>
   );
 }
-
-
-
-
-
-
