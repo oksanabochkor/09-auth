@@ -1,7 +1,35 @@
-interface Props {
-  params: { slug: string[] };
+import type { Metadata } from "next";
+
+type Props = {
+  params: Promise<{
+    slug?: string[];
+  }>;
+};
+
+// ✅ FIX: await params
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+
+  const filter = slug?.join(" / ") || "All notes";
+
+  const title = `Notes filtered by: ${filter} | NoteHub`;
+  const description = `Browse notes filtered by ${filter}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://09-auth-one-phi.vercel.app/notes/filter/${slug?.join("/")}`,
+      images: [
+        "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+      ],
+    },
+  };
 }
 
-export default function FilterSlugPage({ params }: Props) {
-  return <div>Filter: {params.slug.join("/")}</div>;
+// ✅ default export обовʼязково
+export default function FilterPage() {
+  return <div>Filtered notes page</div>;
 }
