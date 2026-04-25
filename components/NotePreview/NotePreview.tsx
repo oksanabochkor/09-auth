@@ -1,4 +1,5 @@
-import { fetchNoteById } from "../../lib/api";
+import { fetchNoteById } from "@/lib/api/serverApi";
+
 
 export default async function NotePreview({
   id,
