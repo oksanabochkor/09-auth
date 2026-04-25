@@ -87,3 +87,10 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 
   return res.data;
 };
+export const deleteNote = async (id: string): Promise<void> => {
+  const headers = await getHeaders();
+
+  await serverApi.delete(`/notes/${id}`, {
+    headers,
+  });
+};
