@@ -1,14 +1,16 @@
-export default function FilterLayout({
+import { ReactNode } from "react";
+
+export default function Layout({
   children,
   sidebar,
 }: {
-  children: React.ReactNode;
-  sidebar: React.ReactNode;
+  children: ReactNode;
+  sidebar: ReactNode;
 }) {
   return (
     <div style={{ display: "flex", gap: "20px" }}>
-      <aside>{sidebar}</aside>
       <main>{children}</main>
+      <aside>{sidebar}</aside>
     </div>
   );
 }
