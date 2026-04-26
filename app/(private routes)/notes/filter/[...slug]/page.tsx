@@ -1,4 +1,12 @@
 import type { Metadata } from "next";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+
+import { fetchNotes } from "@/lib/api/serverApi";
+import NoteList from "@/components/NoteList/NoteList";
 
 type Props = {
   params: Promise<{
@@ -6,30 +14,39 @@ type Props = {
   }>;
 };
 
-// ✅ FIX: await params
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   const filter = slug?.join(" / ") || "All notes";
 
-  const title = `Notes filtered by: ${filter} | NoteHub`;
-  const description = `Browse notes filtered by ${filter}`;
-
   return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      url: `https://09-auth-one-phi.vercel.app/notes/filter/${slug?.join("/")}`,
-      images: [
-        "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
-      ],
-    },
+    title: `Notes filtered by: ${filter} | NoteHub`,
+    description: `Browse notes filtered by ${filter}`,
   };
 }
 
-// ✅ default export обовʼязково
-export default function FilterPage() {
-  return <div>Filtered notes page</div>;
+export default async function FilterPage({ params }: Props) {
+  const { slug } = await params;
+
+  const tag = slug?.[0];
+
+  const queryClient = new QueryClient();
+
+  // ✅ prefetch (це вимагає ДЗ)
+  const notesResponse = await fetchNotes("", 1, tag);
+
+  await queryClient.prefetchQuery({
+    queryKey: ["notes", tag],
+    queryFn: () => fetchNotes("", 1, tag),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <main>
+        {/* ✅ передаємо notes, як очікує твій NoteList */}
+        <NoteList notes={notesResponse.notes} />
+      </main>
+    </HydrationBoundary>
+  );
 }
+
