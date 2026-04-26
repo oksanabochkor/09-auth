@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
 import { logout } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
+import css from "./AuthNavigation.module.css";
 
 export default function AuthNavigation() {
   const { isAuthenticated, user, clearIsAuthenticated } = useAuthStore();
@@ -16,18 +18,18 @@ export default function AuthNavigation() {
 
   if (!isAuthenticated) {
     return (
-      <>
-        <a href="/sign-in">Login</a>
-        <a href="/sign-up">Register</a>
-      </>
+      <nav className={css.nav}>
+        <Link href="/sign-in">Sign In</Link>
+        <Link href="/sign-up">Sign Up</Link>
+      </nav>
     );
   }
 
   return (
-    <>
-      <a href="/profile">Profile</a>
+    <nav className={css.nav}>
+      <Link href="/profile">Profile</Link>
       <p>{user?.email}</p>
       <button onClick={handleLogout}>Logout</button>
-    </>
+    </nav>
   );
 }

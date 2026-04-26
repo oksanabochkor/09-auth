@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+
 import { fetchNoteById } from "@/lib/api/serverApi";
+import NoteDetails from "@/app/(private routes)/notes/[id]/NoteDetails.client";
 
 type Params = {
   id: string;
@@ -16,7 +23,6 @@ export async function generateMetadata(
     return {
       title: `${note.title} | NoteHub`,
       description: note.content?.slice(0, 100),
-
       openGraph: {
         title: `${note.title} | NoteHub`,
         description: note.content?.slice(0, 100),
@@ -36,7 +42,7 @@ export async function generateMetadata(
   }
 }
 
-// 🔥 ОЦЕ ГОЛОВНЕ, ЧОГО НЕМА У ТЕБЕ
+// ✅ ВИПРАВЛЕНА СТОРІНКА
 export default async function Page({
   params,
 }: {
@@ -44,12 +50,18 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  const note = await fetchNoteById(id);
+  const queryClient = new QueryClient();
+
+  // 🔥 PREFETCH
+  await queryClient.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
 
   return (
-    <main>
-      <h1>{note.title}</h1>
-      <p>{note.content}</p>
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NoteDetails id={id} />
+    </HydrationBoundary>
   );
 }
+

@@ -7,7 +7,7 @@ import type { User } from "@/types/user";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
-// ✅ FIXED
+// 🔹 Отримання cookies для SSR
 const getHeaders = async () => {
   const cookieStore = await cookies();
 
@@ -25,20 +25,19 @@ const serverApi = axios.create({
   baseURL,
 });
 
+//
 // ===== AUTH =====
+//
 
-export const checkSession = async (): Promise<User | null> => {
-  try {
-    const headers = await getHeaders();
+// ✅ ГОЛОВНИЙ ФІКС — повертаємо ВЕСЬ response
+export const checkSession = async () => {
+  const headers = await getHeaders();
 
-    const res = await serverApi.get("/auth/session", {
-      headers,
-    });
+  const res = await serverApi.get("/auth/session", {
+    headers,
+  });
 
-    return res.data || null;
-  } catch {
-    return null;
-  }
+  return res; // ❗ ВАЖЛИВО
 };
 
 export const getMe = async (): Promise<User> => {
@@ -51,7 +50,9 @@ export const getMe = async (): Promise<User> => {
   return res.data;
 };
 
+//
 // ===== NOTES =====
+//
 
 export const fetchNotes = async (
   search: string,
@@ -87,6 +88,7 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
 
   return res.data;
 };
+
 export const deleteNote = async (id: string): Promise<void> => {
   const headers = await getHeaders();
 

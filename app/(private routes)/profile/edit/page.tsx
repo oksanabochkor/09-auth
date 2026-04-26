@@ -11,7 +11,6 @@ import css from "./EditProfilePage.module.css";
 
 export default function EditProfilePage() {
   const router = useRouter();
-
   const setUser = useAuthStore((s) => s.setUser);
 
   const [username, setUsername] = useState("");
@@ -20,7 +19,7 @@ export default function EditProfilePage() {
 
   const [loading, setLoading] = useState(true);
 
-  // 🔄 отримання даних користувача
+  // 🔄 load user
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -30,7 +29,7 @@ export default function EditProfilePage() {
         setEmail(user.email);
         setAvatar(user.avatar);
 
-        setUser(user); // 🔥 оновлюємо Zustand
+        setUser(user);
       } catch (error) {
         console.log(error);
       } finally {
@@ -42,7 +41,7 @@ export default function EditProfilePage() {
   }, [setUser]);
 
   // 💾 submit
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -50,7 +49,7 @@ export default function EditProfilePage() {
 
       setUser(updatedUser);
 
-      router.push("/profile"); // ✅ редірект
+      router.push("/profile");
     } catch (error) {
       console.log(error);
     }
@@ -64,39 +63,51 @@ export default function EditProfilePage() {
   if (loading) return <p>Loading...</p>;
 
   return (
-   <main className={css.mainContent}>
-  <div className={css.profileCard}>
-    <h1 className={css.formTitle}>Edit Profile</h1>
+    <main className={css.mainContent}>
+      <div className={css.profileCard}>
+        <h1 className={css.formTitle}>Edit Profile</h1>
 
-    <img src="avatar"
-      alt="User Avatar"
-      width={120}
-      height={120}
-      className={css.avatar}
-    />
-
-    <form className={css.profileInfo}>
-      <div className={css.usernameWrapper}>
-        <label htmlFor="username">Username:</label>
-        <input id="username"
-          type="text"
-          className={css.input}
+        {/* ✅ FIXED IMAGE */}
+        <Image
+          src={avatar}
+          alt="User Avatar"
+          width={120}
+          height={120}
+          className={css.avatar}
         />
+
+        {/* ✅ FIXED FORM */}
+        <form className={css.profileInfo} onSubmit={handleSubmit}>
+          <div className={css.usernameWrapper}>
+            <label htmlFor="username">Username:</label>
+
+            <input
+              id="username"
+              type="text"
+              className={css.input}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+
+          {/* email тільки для показу */}
+          <p>Email: {email}</p>
+
+          <div className={css.actions}>
+            <button type="submit" className={css.saveButton}>
+              Save
+            </button>
+
+            <button
+              type="button"
+              className={css.cancelButton}
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
-
-      <p>Email: user_email@example.com</p>
-
-      <div className={css.actions}>
-        <button type="submit" className={css.saveButton}>
-          Save
-        </button>
-        <button type="button" className={css.cancelButton}>
-          Cancel
-        </button>
-      </div>
-    </form>
-  </div>
-</main>
-
+    </main>
   );
 }
